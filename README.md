@@ -48,6 +48,26 @@ Uploads a new file to the `data` directory. Expects a `multipart/form-data` requ
 an HTML form submission or JavaScript [FormData](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/FormData))
 with a key (name) of `file`.
 
+Responds with JSON. If the upload fails, you'll get a 5xx or 4xx status code and an error object like:
+
+```json
+{ 
+  "errno":3,
+  "code":"EACCES",
+  "path":"/tmp/3b328623fa95f311a3389df247eaa164.jpg"
+}
+```
+
+If it succeeds, you'll get a 2xx status code and a body with something like:
+
+```json
+{
+  "url":"2fr2ursgglc.jpg",
+  "size":31511,
+  "type":"image/jpeg"
+}
+```
+
 See https://github.com/educoder/Pikachu/blob/master/upload.html for a JavaScript example.
 
 #### `GET /<filename>.<ext>`
