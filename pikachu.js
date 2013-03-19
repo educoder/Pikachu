@@ -50,14 +50,18 @@ app.post('/', function (req, res) {
   fs.readdir(DATA_DIR, function (err, files) {
     var newId = Math.random() * 9007199254740992; // max int value, see http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t
     var newFilename = newId.toString(36) + path.extname(req.files.file.filename);
-    fs.rename(req.files.file.path, path.join(DATA_DIR, newFilename), function () {
-      var f = {
-        url: newFilename,
-        size: req.files.file.size,
-        type: req.files.file.type
-      };
+    fs.rename(req.files.file.path, path.join(DATA_DIR, newFilename), function (err) {
       res.type('json');
-      res.send(JSON.stringify(f));
+      if (err) {
+        res.send(500, JSON.stringify(err));
+      } else {
+        var f = {
+          url: newFilename,
+          size: req.files.file.size,
+          type: req.files.file.type
+        }
+        res.send(JSON.stringify(f));
+      }
     });
   });
 });
