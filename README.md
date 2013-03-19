@@ -55,3 +55,4 @@ See https://github.com/educoder/Pikachu/blob/master/upload.html for a JavaScript
 Responds with the contents of the given filename. 
 
 For example, `GET /14o241fsc8w.jpg` would respond with the contents of the `data/14o241fsc8w.jpg` file.
+The response's MIME type is automatically resolved based on the file's extension. 
