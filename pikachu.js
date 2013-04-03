@@ -34,6 +34,32 @@ app.get('/upload.html', function (req, res) {
   res.sendfile(path.join(__dirname, 'upload.html'));
 });
 
+app.get('/projects', function (req, res) {
+  fs.readdir(path.join(DATA_DIR, 'projects'), function (err, files) {
+    res.type('json');
+
+    if (err) {
+      res.send(500, JSON.stringify(err));
+    } else {
+      res.send(JSON.stringify(files));
+    }
+  });
+});
+
+app.get('/projects/:name', function (req, res) {
+  var folder = req.params.name;
+  fs.readdir(path.join(DATA_DIR, 'projects', folder), function (err, files) {
+    res.type('json');
+
+    if (err) {
+      res.send(500, JSON.stringify(err));
+    } else {
+      res.send(JSON.stringify(files));
+    }
+  });
+
+});
+
 app.get('/', function (req, res) {
   fs.readdir(DATA_DIR, function (err, files) {
     res.type('json');
@@ -51,6 +77,31 @@ app.post('/', function (req, res) {
     var newId = Math.random() * 9007199254740992; // max int value, see http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t
     var newFilename = newId.toString(36) + path.extname(req.files.file.filename);
     fs.rename(req.files.file.path, path.join(DATA_DIR, newFilename), function (err) {
+      res.type('json');
+      if (err) {
+        res.send(500, JSON.stringify(err));
+      } else {
+        var f = {
+          url: newFilename,
+          size: req.files.file.size,
+          type: req.files.file.type
+        }
+        res.send(JSON.stringify(f));
+      }
+    });
+  });
+});
+
+app.post('/projects/:name', function (req, res) {
+  var folder = req.params.name;
+  var storage_folder = path.join(DATA_DIR, 'projects', folder);
+  if (!fs.existsSync(storage_folder)) {
+    fs.mkdirSync(storage_folder);
+  }
+  fs.readdir(storage_folder, function (err, files) {
+    var newId = Math.random() * 9007199254740992; // max int value, see http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t
+    var newFilename = newId.toString(36) + path.extname(req.files.file.filename);
+    fs.rename(req.files.file.path, path.join(storage_folder, newFilename), function (err) {
       res.type('json');
       if (err) {
         res.send(500, JSON.stringify(err));
