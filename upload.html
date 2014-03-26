@@ -9,7 +9,7 @@
             var fileInput = jQuery('#file');
             var uploadInput = jQuery('#upload');
 
-            fileInput.on('change', function () { 
+            fileInput.on('change', function () {
                 if (fileInput.val()) {
                     uploadInput.removeAttr('disabled');
                 }
@@ -44,7 +44,16 @@
                 function success(data, status, xhr) {
                     console.log("UPLOAD SUCCEEDED!");
                     console.log(xhr.getAllResponseHeaders());
+                    showResult(data.url);
                 }
+            }
+
+            function showResult(url) {
+                var picLink = jQuery('<a>');
+                picLink.text(url);
+                picLink.attr('href', url);
+                picLink.attr('target', "_blank");
+                jQuery('#result').append(picLink);
             }
         });
     </script>
@@ -54,4 +63,4 @@
     <p><button id="upload" disabled="disabled">Upload File</button></p>
     <p id="result"></p>
 </body>
-</head>    
+</head>
