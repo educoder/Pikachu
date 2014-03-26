@@ -6,7 +6,8 @@
 var express = require('express'),
   http = require('http'),
   path = require('path'),
-  fs = require('fs');
+  fs = require('fs'),
+  _ = require('lodash');
 
 var app = express();
 
@@ -34,32 +35,6 @@ app.get('/upload.html', function (req, res) {
   res.sendfile(path.join(__dirname, 'upload.html'));
 });
 
-app.get('/projects', function (req, res) {
-  fs.readdir(path.join(DATA_DIR, 'projects'), function (err, files) {
-    res.type('json');
-
-    if (err) {
-      res.send(500, JSON.stringify(err));
-    } else {
-      res.send(JSON.stringify(files));
-    }
-  });
-});
-
-app.get('/projects/:name', function (req, res) {
-  var folder = req.params.name;
-  fs.readdir(path.join(DATA_DIR, 'projects', folder), function (err, files) {
-    res.type('json');
-
-    if (err) {
-      res.send(500, JSON.stringify(err));
-    } else {
-      res.send(JSON.stringify(files));
-    }
-  });
-
-});
-
 app.get('/', function (req, res) {
   fs.readdir(DATA_DIR, function (err, files) {
     res.type('json');
@@ -67,7 +42,8 @@ app.get('/', function (req, res) {
     if (err) {
       res.send(500, JSON.stringify(err));
     } else {
-      res.send(JSON.stringify(files));
+      var nonHiddenFiles = _.filter(files, function(file) { return !isUnixHiddenPath(file); });
+      res.send(JSON.stringify(nonHiddenFiles));
     }
   });
 });
@@ -90,6 +66,33 @@ app.post('/', function (req, res) {
       }
     });
   });
+});
+
+app.get('/projects', function (req, res) {
+  fs.readdir(path.join(DATA_DIR, 'projects'), function (err, files) {
+    res.type('json');
+
+    if (err) {
+      res.send(500, JSON.stringify(err));
+    } else {
+      var nonHiddenFiles = _.filter(files, function(file) { return !isUnixHiddenPath(file); });
+      res.send(JSON.stringify(nonHiddenFiles));
+    }
+  });
+});
+
+app.get('/projects/:name', function (req, res) {
+  var folder = req.params.name;
+  fs.readdir(path.join(DATA_DIR, 'projects', folder), function (err, files) {
+    res.type('json');
+
+    if (err) {
+      res.send(500, JSON.stringify(err));
+    } else {
+      res.send(JSON.stringify(files));
+    }
+  });
+
 });
 
 app.post('/projects/:name', function (req, res) {
@@ -147,3 +150,13 @@ function cors(req, res, next) {
         next();
     }
 }
+
+/**
+ * Checks whether a path starts with or contains a hidden file or a folder.
+ * @param {string} source - The path of the file that needs to be validated.
+ * returns {boolean} - `true` if the source is blacklisted and otherwise `false`.
+ * via http://stackoverflow.com/questions/8905680/nodejs-check-for-hidden-files
+ */
+var isUnixHiddenPath = function (path) {
+    return (/(^|.\/)\.+[^\/\.]/g).test(path);
+};
