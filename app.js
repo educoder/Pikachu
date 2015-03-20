@@ -35,23 +35,20 @@ app.get('/upload.html', function (req, res) {
   res.sendfile(path.join(__dirname, 'upload.html'));
 });
 
-if (process.env.NODE_ENV === "development") {
-  app.get('/', function (req, res) {
-    fs.readdir(DATA_DIR, function (err, files) {
-      res.type('json');
+app.get('/', function (req, res) {
+  fs.readdir(DATA_DIR, function (err, files) {
+    res.type('json');
 
-      if (err) {
-        res.send(500, JSON.stringify(err));
-      } else {
-        // don't show hidden files
-        var nonHiddenFiles = _.filter(files, function(file) { return !isUnixHiddenPath(file); });
-        res.send(JSON.stringify(nonHiddenFiles));
-      }
-    });
+    if (err) {
+      res.send(500, JSON.stringify(err));
+    } else {
+      // don't show hidden files
+      var nonHiddenFiles = _.filter(files, function(file) { return !isUnixHiddenPath(file); });
+      res.send(JSON.stringify(nonHiddenFiles));
+    }
   });
-} else {
-  // let Passenger/nginx handle the serving of your public folder files to improve speed
-}
+});
+
 
 app.post('/', function (req, res) {
   fs.readdir(DATA_DIR, function (err, files) {
