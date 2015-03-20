@@ -11,7 +11,7 @@ var express = require('express'),
 
 var app = express();
 
-var DATA_DIR = path.join(__dirname, 'data');
+var DATA_DIR = path.join(__dirname, 'public');
 
 app.configure(function(){
   app.set('port', process.env.PORT || 2596);
