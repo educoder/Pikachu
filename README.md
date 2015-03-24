@@ -4,8 +4,8 @@ Pikachu
 A tiny RESTful service for uploading pictures and other media.
 
 
-Deployment
-----------
+Local Deployment
+-----------------
 
 ```
 git clone git://github.com/educoder/Pikachu.git
@@ -13,8 +13,22 @@ cd Pikachu
 npm install
 node app.js
 ```
-
 Pikachu should now be running on <http://localhost:2596>.
+
+Server Deployment
+-----------------
+
+Deploying on a server isn't much different from local deployment. The main difference is to ensure that Pikachu is automatically started on server start and restart should it crash.
+
+For node.js you can use [forever] (https://github.com/foreverjs/forever), [supervisor] (http://supervisord.org/) or [PM2] (https://github.com/Unitech/PM2). The goal is to have a monitor that starts the node.js based app and keeps it running. Then you use Apache2 or Nginx as a reverse proxy to direct web traffic to the node.js app. At Encore Lab we used forever and then quickly switched to forever.
+
+Another elegant solution is to use [Phussion Passenger] (https://www.phusionpassenger.com/) to run node, Rack and Python based applications. Passenger can run stand alone and offers plugins for Apache2 and Nginx.
+The major benefit of passenger as a plugin is that any Passenger based app will run when the webserver runs.
+
+If you deploy Pikachu with Passenger on Nginx, the pictures are servered by nginx directly from the public folder without involving passenger nor Pikachu. Serving static content via nginx should improve the performance of Pikachu since nginx deals very well with static content and employs caching strategies to be very efficient.
+
+More details on how to install will follow.
+
 
 Usage
 -----
